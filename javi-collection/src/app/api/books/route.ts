@@ -41,6 +41,7 @@ async function POST(req: NextApiRequest) {
             review: data.review ? data.review : null,
             status: data.status,
             type: data.type,
+            description: data.description
         });
 
         return new Response(JSON.stringify("{'success': 'inserted correctly'}"), {

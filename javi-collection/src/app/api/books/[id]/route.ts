@@ -56,4 +56,27 @@ async function PUT(req: NextApiRequest, { params }: { params: Promise<{ id: stri
     }
 }
 
-export { DELETE, PUT};
+async function POST(req: NextApiRequest, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        await dbConnect();
+
+        console.log('params', params);
+
+        const { id } = await params;
+
+        const book = await Books.findById(id);
+
+        return new Response(JSON.stringify(book), {
+            status: 200,
+            headers:{ "Content-Type": "application/json" }
+        });
+    } catch (error) {
+        console.error('Error updating book:', error);
+        return new Response(JSON.stringify("{'error': 'internal error'}"), {
+            status: 500,
+            headers:{ "Content-Type": "application/json" }
+        });
+    }
+}
+
+export { DELETE, PUT, POST};

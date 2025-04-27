@@ -4,6 +4,7 @@ export interface IBooks extends Document {
     title: string;
     writer: string;
     pages: number;
+    description: string;
     initDate: Date;
     endDate?: Date;
     rating?: number;
@@ -16,6 +17,7 @@ const BooksSchema: Schema = new Schema({
     title: { type: String, required: true,},
     writer: { type: String, required: true, },
     pages: { type: Number, required: true, },
+    description: { type: String, required: true, },
     initDate: { type: Date, required: true, },
     endDate: { type: Date, required: false, },
     rating: { type: Number, required: false, },
