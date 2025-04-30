@@ -1,6 +1,6 @@
 import {NextApiRequest} from 'next';
-import dbConnect from '../../../../../lib/mongodb';
-import Books from '../../../../../lib/models/Books';
+import dbConnect from '../../../lib/mongodb';
+import Books from '../../../lib/models/Books';
 
 async function DELETE(req: NextApiRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
