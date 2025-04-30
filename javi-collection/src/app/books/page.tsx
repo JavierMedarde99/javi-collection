@@ -2,7 +2,18 @@
 
 import './books.css';
 import { useEffect, useState } from 'react';
-import Card from "react-bootstrap/Card";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Progress } from "@/components/ui/progress"
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -27,26 +38,36 @@ export default function BooksPage() {
 
             <div className='listBooks'>
                 {books.length === 0 ? (
-                    <p>Cargando libros...</p>
+                    <div className='loading'>
+                        <Progress value={33} />
+                    </div>
                 ) : (
                     books.map((book) => (
                         <Card key={book._id}>
-                            <Card.Img variant='top' src="public/" alt='book' />
-                            <Card.Body className='text-bg-light'>
-                                <Card.Title>{book.title}</Card.Title>
-                                <Card.Text>
-                                    <strong>Autor:</strong> {book.writer}&ensp;
+                            <CardHeader>
+                                <CardTitle>{book.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className='text-bg-light'>
+                                <p><strong>Autor:</strong> {book.writer}&ensp;<br />
                                     <strong>Páginas:</strong> {book.pages}<br /> <br />
-                                    {book.description}
-                                </Card.Text>
-                                <Card.Link href={`/books/${book._id}`} className='btn btn-primary'>
-                                    Ver más
-                                </Card.Link>
-                            </Card.Body>
+                                    {book.description} </p>
+                                <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
+                            </CardContent>
                         </Card>
                     ))
                 )}
+                < Card >
+                    <CardHeader>
+                        <CardTitle>New</CardTitle>
+                    </CardHeader>
+                    <CardContent className='text-bg-light'>
+                        <Popover>
+                            <PopoverTrigger>+</PopoverTrigger>
+                            <PopoverContent>Place content for the popover here.</PopoverContent>
+                        </Popover>
+                    </CardContent>
+                </Card>
             </div>
-        </div>
+        </div >
     );
 }
