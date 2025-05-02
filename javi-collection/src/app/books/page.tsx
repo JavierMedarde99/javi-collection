@@ -1,6 +1,7 @@
 'use client';
 
 import './books.css';
+import { FormBooks } from "@/components/formBooks";
 import { useEffect, useState } from 'react';
 import {
     Popover,
@@ -63,7 +64,9 @@ export default function BooksPage() {
                     <CardContent className='text-bg-light'>
                         <Popover>
                             <PopoverTrigger>+</PopoverTrigger>
-                            <PopoverContent>Place content for the popover here.</PopoverContent>
+                            <PopoverContent>
+                                <FormBooks />
+                            </PopoverContent>
                         </Popover>
                     </CardContent>
                 </Card>

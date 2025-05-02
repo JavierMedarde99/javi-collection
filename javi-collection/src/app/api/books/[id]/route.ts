@@ -35,12 +35,13 @@ async function PUT(req: NextApiRequest, { params }: { params: Promise<{ id: stri
             title: data.title,
             writer: data.writer,
             pages: data.pages,
-            initDate: data.initDate,
+            initDate: data.initDate ? data.initDate : null,
             endDate: data.endDate ? data.endDate : null,
             rating: data.rating ? data.rating : null,
             review: data.review ? data.review : null,
             status: data.status,
             type: data.type,
+            description: data.description
         });
 
         return new Response(JSON.stringify("{'success': 'updated correctly'}"), {
