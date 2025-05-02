@@ -14,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
+import { useState } from "react";
 
 const formSchema = z.object({
     title: z.string().min(1, { message: "El título es requerido" }),
@@ -29,6 +30,8 @@ const formSchema = z.object({
 })
 
 function FormBooks() {
+
+    const [status, setStatus] = useState('toRead');
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -135,7 +138,7 @@ function FormBooks() {
                         <FormItem>
                             <FormLabel>Status</FormLabel>
                             <FormControl>
-                                <Select>
+                                <Select onValueChange={value => setStatus(value)}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select the reading status" />
                                     </SelectTrigger>
@@ -153,6 +156,21 @@ function FormBooks() {
                         </FormItem>
                     )}
                 />
+                {status == 'reading' && (
+                                    <FormField
+                                    control={form.control}
+                                    name="initDate"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Pages</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Init date" type="date" {...field} value={field.value ? field.value.toISOString().split('T')[0] : ''} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                )}
                 <Button type="submit">Send</Button>
             </form>
         </FormProvider>
