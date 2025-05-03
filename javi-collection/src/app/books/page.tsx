@@ -43,33 +43,37 @@ export default function BooksPage() {
                         <Progress value={33} />
                     </div>
                 ) : (
-                    books.map((book) => (
-                        <Card key={book._id}>
+                    <>
+                        < Card  className="mt-4 w-25">
                             <CardHeader>
-                                <CardTitle>{book.title}</CardTitle>
+                                <CardTitle>New</CardTitle>
                             </CardHeader>
                             <CardContent className='text-bg-light'>
-                                <p><strong>Autor:</strong> {book.writer}&ensp;<br />
-                                    <strong>Páginas:</strong> {book.pages}<br /> <br />
-                                    {book.description} </p>
-                                <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
+                                <Popover>
+                                    <PopoverTrigger>+</PopoverTrigger>
+                                    <PopoverContent className="max-h-200 overflow-y-auto w-64">
+                                            <FormBooks />
+                                    </PopoverContent>
+                                </Popover>
                             </CardContent>
                         </Card>
-                    ))
+                        {books.map((book) => (
+                            <Card key={book._id} className="mt-4">
+                                <CardHeader>
+                                    <CardTitle>{book.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent className='text-bg-light'>
+                                    <p><strong>Autor:</strong> {book.writer}&ensp;<br />
+                                        <strong>Páginas:</strong> {book.pages}<br /> <br />
+                                        {book.description} </p>
+                                    <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </>
+
                 )}
-                < Card >
-                    <CardHeader>
-                        <CardTitle>New</CardTitle>
-                    </CardHeader>
-                    <CardContent className='text-bg-light'>
-                        <Popover>
-                            <PopoverTrigger>+</PopoverTrigger>
-                            <PopoverContent>
-                                <FormBooks />
-                            </PopoverContent>
-                        </Popover>
-                    </CardContent>
-                </Card>
+
             </div>
         </div >
     );
