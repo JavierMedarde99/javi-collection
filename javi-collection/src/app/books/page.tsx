@@ -2,6 +2,7 @@
 
 import './books.css';
 import { FormBooks } from "./formBooks";
+import { FindButtons } from "./InputFindBook";
 import { TypesButtons } from "./typesButtons";
 import { useEffect, useState } from 'react';
 import {
@@ -20,6 +21,7 @@ import {
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
     const [typeBook, setTypeBook] = useState('');
+    const [nameBook, setNameBook] = useState('');
 
     useEffect(() => {
         async function fetchBooks() {
@@ -44,8 +46,10 @@ export default function BooksPage() {
     return (
         <div>
             <h1>List of Books</h1>
-            <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
-
+            <div className="flex flex-row justify-around w-full">
+                <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
+                <FindButtons setbookname={setNameBook} />
+            </div>
             <div className='listBooks'>
                 {books.length === 0 ? (
                     <div className='loading'>
@@ -67,7 +71,7 @@ export default function BooksPage() {
                             </CardContent>
                         </Card>
                         {books.map((book) => (
-                                (typeBook == book.type || typeBook =='') && (
+                            (typeBook == book.type || typeBook == '' && nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase())) && (
                                 <Card key={book._id} className="mt-4">
                                     <CardHeader>
                                         <CardTitle>{book.title}</CardTitle>
