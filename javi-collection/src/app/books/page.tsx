@@ -71,7 +71,7 @@ export default function BooksPage() {
                             </CardContent>
                         </Card>
                         {books.map((book) => (
-                            (typeBook == book.type || typeBook == '' && nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase())) && (
+                            ((typeBook == book.type || typeBook == '') && (nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase()))) && (
                                 <Card key={book._id} className="mt-4">
                                     <CardHeader>
                                         <CardTitle>{book.title}</CardTitle>
