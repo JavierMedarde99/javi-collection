@@ -1,10 +1,10 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "./ui/button";
-import { Textarea } from "./ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
     Select,
     SelectContent,
@@ -79,7 +79,7 @@ function FormBooks() {
                     name="title"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Título</FormLabel>
+                            <FormLabel>Title</FormLabel>
                             <FormControl>
                                 <Input placeholder="Title of the book" {...field} />
                             </FormControl>
@@ -92,7 +92,7 @@ function FormBooks() {
                     name="writer"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Autor</FormLabel>
+                            <FormLabel>Author</FormLabel>
                             <FormControl>
                                 <Input placeholder="Author of the book" {...field} />
                             </FormControl>

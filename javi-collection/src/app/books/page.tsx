@@ -1,7 +1,8 @@
 'use client';
 
 import './books.css';
-import { FormBooks } from "@/components/formBooks";
+import { FormBooks } from "./formBooks";
+import { TypesButtons } from "./typesButtons";
 import { useEffect, useState } from 'react';
 import {
     Popover,
@@ -18,6 +19,7 @@ import {
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
+    const [typeBook, setTypeBook] = useState('');
 
     useEffect(() => {
         async function fetchBooks() {
@@ -33,9 +35,16 @@ export default function BooksPage() {
         fetchBooks();
     }, []);
 
+    function truncateText(text, maxLength = 50) {
+        return text.length > maxLength
+            ? text.slice(0, maxLength - 3) + '...'
+            : text;
+    }
+
     return (
         <div>
             <h1>List of Books</h1>
+            <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
 
             <div className='listBooks'>
                 {books.length === 0 ? (
@@ -44,7 +53,7 @@ export default function BooksPage() {
                     </div>
                 ) : (
                     <>
-                        < Card  className="mt-4 w-25">
+                        < Card className="mt-4 w-25">
                             <CardHeader>
                                 <CardTitle>New</CardTitle>
                             </CardHeader>
@@ -52,29 +61,31 @@ export default function BooksPage() {
                                 <Popover>
                                     <PopoverTrigger>+</PopoverTrigger>
                                     <PopoverContent className="max-h-200 overflow-y-auto w-64">
-                                            <FormBooks />
+                                        <FormBooks />
                                     </PopoverContent>
                                 </Popover>
                             </CardContent>
                         </Card>
                         {books.map((book) => (
-                            <Card key={book._id} className="mt-4">
-                                <CardHeader>
-                                    <CardTitle>{book.title}</CardTitle>
-                                </CardHeader>
-                                <CardContent className='text-bg-light'>
-                                    <p><strong>Autor:</strong> {book.writer}&ensp;<br />
-                                        <strong>Páginas:</strong> {book.pages}<br /> <br />
-                                        {book.description} </p>
-                                    <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
-                                </CardContent>
-                            </Card>
+                                (typeBook == book.type || typeBook =='') && (
+                                <Card key={book._id} className="mt-4">
+                                    <CardHeader>
+                                        <CardTitle>{book.title}</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className='text-bg-light'>
+                                        <p><strong>Autor:</strong> {book.writer}&ensp;<br />
+                                            <strong>Páginas:</strong> {book.pages}<br /> <br />
+                                            {truncateText(book.description)}</p>
+                                        <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
+                                    </CardContent>
+                                </Card>
+                            )
                         ))}
                     </>
 
                 )}
 
             </div>
-        </div >
+        </ div>
     );
 }
