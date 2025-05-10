@@ -32,6 +32,14 @@ const formSchema = z.object({
 function FormBooks() {
 
     const [status, setStatus] = useState('toRead');
+    const [image, setImage] = useState<File | null>(null);
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setImage(file);
+        }
+    };
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -47,19 +55,18 @@ function FormBooks() {
     })
 
     function onSubmit(data: z.infer<typeof formSchema>) {
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(data));
+        if (image) {
+            formData.append('image', image);
+        }
         fetch('/api/books', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
+            body: formData,
         })
             .then((res) => {
-                if(res.ok){
+                if (res.ok) {
                     window.location.reload()
-                }
-                else{
-                    console.error('Error adding book');
                 }
             })
             .catch((error) => {
@@ -73,7 +80,7 @@ function FormBooks() {
 
     return (
         <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" encType="multipart/form-data">
                 <FormField
                     control={form.control}
                     name="title"
@@ -176,6 +183,14 @@ function FormBooks() {
                         </FormItem>
                     )}
                 />
+
+                <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                        <Input id="picture" type="file" onChange={handleImageChange} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
                 {(status == 'reading' || status == 'read') && (
                     <FormField
                         control={form.control}

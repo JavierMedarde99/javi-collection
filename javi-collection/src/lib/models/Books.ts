@@ -11,6 +11,7 @@ export interface IBooks extends Document {
     review?: string;
     status: string;
     type: string;
+    image?: string;
 }
 
 const BooksSchema: Schema = new Schema({
@@ -24,6 +25,7 @@ const BooksSchema: Schema = new Schema({
     review: { type: String, required: false, },
     status: { type: String, required: true, },
     type: { type: String, required: true, },
+    image: { type: String, required: false, },
 });
 
 const Books = mongoose.models.Books || mongoose.model<IBooks>('Books', BooksSchema);

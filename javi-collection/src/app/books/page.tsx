@@ -17,6 +17,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import Image from 'next/image'
+
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -75,6 +77,12 @@ export default function BooksPage() {
                                 <Card key={book._id} className="mt-4">
                                     <CardHeader>
                                         <CardTitle>{book.title}</CardTitle>
+                                        <Image
+                                            src={`/books/${book.image ? book.image : 'default.jpg'}`}
+                                            alt={book.title}
+                                            width={200}
+                                            height={300}
+                                        />
                                     </CardHeader>
                                     <CardContent className='text-bg-light'>
                                         <p><strong>Autor:</strong> {book.writer}&ensp;<br />
