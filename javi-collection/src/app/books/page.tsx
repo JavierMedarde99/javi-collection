@@ -18,7 +18,7 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import Image from 'next/image'
-
+import ReactStars from 'react-stars'
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -39,7 +39,7 @@ export default function BooksPage() {
         fetchBooks();
     }, []);
 
-    function truncateText(text, maxLength = 50) {
+    function truncateText(text: string, maxLength = 50) {
         return text.length > maxLength
             ? text.slice(0, maxLength - 3) + '...'
             : text;
@@ -76,19 +76,34 @@ export default function BooksPage() {
                             ((typeBook == book.type || typeBook == '') && (nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase()))) && (
                                 <Card key={book._id} className="mt-4">
                                     <CardHeader>
-                                        <CardTitle>{book.title}</CardTitle>
+                                        <CardTitle className="text-center">{book.title}</CardTitle>
                                         <Image
                                             src={`/books/${book.image ? book.image : 'default.jpg'}`}
                                             alt={book.title}
                                             width={200}
                                             height={300}
+                                            style={{
+                                                margin: "auto",
+                                            }}
                                         />
                                     </CardHeader>
                                     <CardContent className='text-bg-light'>
-                                        <p><strong>Autor:</strong> {book.writer}&ensp;<br />
-                                            <strong>Páginas:</strong> {book.pages}<br /> <br />
+                                        <ul>
+                                            <li><strong>Author:</strong> {book.writer}</li>
+                                            <li><strong>type:</strong> {book.type}</li>
+                                            <li><strong>status:</strong> {book.status}</li>
+                                            {book.status == 'read' && (
+                                                    <ReactStars
+                                                        count={5}
+                                                        value={book.rating}
+                                                        size={24}
+                                                        edit={false}/>
+                                            )}
+                                        </ul>
+
+                                        <p>
                                             {truncateText(book.description)}</p>
-                                        <p> <a href={`/books/${book._id}`}>Ver más</a> </p>
+                                        <p className="text-center"> <a href={`/books/${book._id}`}>Ver más</a> </p>
                                     </CardContent>
                                 </Card>
                             )

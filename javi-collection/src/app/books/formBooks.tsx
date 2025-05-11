@@ -15,6 +15,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useState } from "react";
+import ReactStars from 'react-stars';
 
 const formSchema = z.object({
     title: z.string().min(1, { message: "The title is required" }),
@@ -23,8 +24,8 @@ const formSchema = z.object({
     description: z.string().min(1, { message: "Description is required" }),
     type: z.enum(["novel", "comic", "manga"], { message: "The type is required" }),
     status: z.enum(["reading", "read", "toRead"], { message: "The state is required" }),
-    initDate: z.date().optional(),
-    endDate: z.date().optional(),
+    initDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
     rating: z.number().optional(),
     review: z.string().optional(),
 })
@@ -49,8 +50,6 @@ function FormBooks() {
             pages: 0,
             description: "",
             initDate: new Date(),
-            type: "novel",
-            status: "toRead",
         },
     })
 
@@ -136,11 +135,11 @@ function FormBooks() {
                 <FormField
                     control={form.control}
                     name="type"
-                    render={() => (
+                    render={({ field }) => (
                         <FormItem>
                             <FormLabel>Type</FormLabel>
                             <FormControl>
-                                <Select>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select a type of book" />
                                     </SelectTrigger>
@@ -161,11 +160,14 @@ function FormBooks() {
                 <FormField
                     control={form.control}
                     name="status"
-                    render={() => (
+                    render={({ field }) => (
                         <FormItem>
                             <FormLabel>Status</FormLabel>
                             <FormControl>
-                                <Select onValueChange={value => setStatus(value)}>
+                                <Select onValueChange={value => {
+                                    field.onChange(value);
+                                    setStatus(value);
+                                }} value={field.value}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select the reading status" />
                                     </SelectTrigger>
@@ -185,12 +187,13 @@ function FormBooks() {
                 />
 
                 <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>Image</FormLabel>
                     <FormControl>
                         <Input id="picture" type="file" onChange={handleImageChange} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
+
                 {(status == 'reading' || status == 'read') && (
                     <FormField
                         control={form.control}
@@ -199,7 +202,7 @@ function FormBooks() {
                             <FormItem>
                                 <FormLabel>Start read date</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Init date" type="date" {...field} value={field.value ? field.value.toISOString().split('T')[0] : ''} />
+                                    <Input placeholder="Init date" type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -215,7 +218,7 @@ function FormBooks() {
                                 <FormItem>
                                     <FormLabel>End read date</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="End date" type="date" {...field} value={field.value ? field.value.toISOString().split('T')[0] : ''} />
+                                        <Input placeholder="End date" type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -228,7 +231,10 @@ function FormBooks() {
                                 <FormItem>
                                     <FormLabel>Rating</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Rating" type="number" {...field} onChange={event => field.onChange(+event.target.value)} />
+                                        <ReactStars
+                                            count={5}
+                                            onChange={(newRating: number) => field.onChange(newRating)}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

@@ -1,6 +1,7 @@
 'use client';
 
 
+import Image from 'next/image'
 import { useEffect, useState } from 'react';
 
 export default function BookPage({ params }: { params: Promise<{ id: string }> }) {
@@ -32,7 +33,8 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                 ) : (
                     <div>
                         <h1>{book.title}</h1>
-                        <p><strong> writter: </strong>{book.writer}</p>
+                        <Image src={`/books/${book.image ? book.image : 'default.jpg'}`} alt={book.title} width={200} height={300} />
+                        <p><strong> Author: </strong>{book.writer}</p>
                         <p><strong>pages: </strong>{book.pages}</p>
                         <p><strong>initDate: </strong>{book.initDate}</p>
                         <p>{book.description}</p>
