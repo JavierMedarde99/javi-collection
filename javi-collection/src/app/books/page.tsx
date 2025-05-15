@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/card"
 import Image from 'next/image'
 import ReactStars from 'react-stars'
+import { Dialog, DialogDescription } from '@radix-ui/react-dialog';
+import { DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { FormExternalBooks } from './formFindExternalBooks';
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -65,11 +68,21 @@ export default function BooksPage() {
                             </CardHeader>
                             <CardContent className='text-bg-light'>
                                 <Popover>
-                                    <PopoverTrigger>+</PopoverTrigger>
+                                    <PopoverTrigger>add manual</PopoverTrigger>
                                     <PopoverContent className="max-h-200 overflow-y-auto w-64">
                                         <FormBooks />
                                     </PopoverContent>
                                 </Popover>
+                                <Dialog>
+                                    <DialogTrigger>add find</DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                        <DialogTitle>add book</DialogTitle>
+                                        <DialogDescription>You can get the data from a book automatically</DialogDescription>
+                                        </DialogHeader>
+                                        <FormExternalBooks />
+                                    </DialogContent>
+                                </Dialog>
                             </CardContent>
                         </Card>
                         {books.map((book) => (
