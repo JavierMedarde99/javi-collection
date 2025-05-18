@@ -1,18 +1,24 @@
 'use client';
 
-
+import { DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 import Image from 'next/image'
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use, useMemo } from 'react';
+import { FormBooks } from '../formBooks';
 
 export default function BookPage({ params }: { params: Promise<{ id: string }> }) {
 
+    const paramsResolved = use(params);
+
     const [book, setBook] = useState([]);
+    const [open, setOpen] = useState(false);
+
+    const bookMemo = useMemo(() => book, [book]);
 
     useEffect(() => {
         async function fetchBooks() {
             try {
-                const { id } = await params;
-                const res = await fetch('/api/books/' + id, {
+                const res = await fetch('/api/books/' + paramsResolved.id, {
                     method: 'POST',
                 });
                 const data = await res.json();
@@ -21,9 +27,8 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                 console.error('Error fetching books:', error);
             }
         }
-
         fetchBooks();
-    }, []);
+    }, [paramsResolved.id]);
 
     return (
         <>
@@ -40,12 +45,23 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                         <p>{book.description}</p>
                         {book.status !== 'reader' && (
                             <>
-                            <p><strong>status:</strong> {book.status}</p>
-                            <p><strong>endDate:</strong> {book.endDate}</p>
-                            <p><strong>rating:</strong> {book.rating}</p>
-                            <p><strong>review:</strong> {book.review}</p>
+                                <p><strong>status:</strong> {book.status}</p>
+                                <p><strong>endDate:</strong> {book.endDate}</p>
+                                <p><strong>rating:</strong> {book.rating}</p>
+                                <p><strong>review:</strong> {book.review}</p>
                             </>
                         )}
+
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <DialogTrigger>Update</DialogTrigger>
+                            <DialogContent >
+                                <DialogTitle>Update Book</DialogTitle>
+                                <DialogDescription>
+                                    Update the book information.
+                                </DialogDescription>
+                                <FormBooks bookValue={bookMemo} />
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 )
             }

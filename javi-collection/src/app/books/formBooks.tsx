@@ -1,10 +1,12 @@
-import { FormProvider, useForm } from "react-hook-form";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+"use client"
+
+import { FormProvider, useForm } from "react-hook-form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 import {
     Select,
     SelectContent,
@@ -14,9 +16,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useState } from "react";
-import ReactStars from 'react-stars';
+import { useEffect, useState } from "react"
+import ReactStars from "react-stars"
 
+// Update the schema to include an optional image field
 const formSchema = z.object({
     title: z.string().min(1, { message: "The title is required" }),
     writer: z.string().min(1, { message: "The author is required" }),
@@ -28,39 +31,54 @@ const formSchema = z.object({
     endDate: z.coerce.date().optional(),
     rating: z.number().optional(),
     review: z.string().optional(),
+    // We don't actually validate this with zod, just use it as a placeholder
+    image: z.any().optional(),
 })
 
-function FormBooks() {
+function FormBooks({ bookValue }: { bookValue?: any }) {
+    const [status, setStatus] = useState("toRead")
+    const [image, setImage] = useState<File | null>(null)
 
-    const [status, setStatus] = useState('toRead');
-    const [image, setImage] = useState<File | null>(null);
-
-    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            setImage(file);
-        }
-    };
-
+    // Initialize form with default values
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            writer: "",
-            pages: 0,
-            description: "",
-            initDate: new Date(),
+            title: bookValue?.title || "",
+            writer: bookValue?.writer || "",
+            pages: bookValue?.pages || 0,
+            description: bookValue?.description || "",
+            type: bookValue?.type || "novel",
+            status: bookValue?.status || "toRead",
+            initDate: bookValue?.initDate ? new Date(bookValue.initDate) : undefined,
+            endDate: bookValue?.endDate ? new Date(bookValue.endDate) : undefined,
+            rating: bookValue?.rating || undefined,
+            review: bookValue?.review || "",
+            image: undefined,
         },
     })
 
-    function onSubmit(data: z.infer<typeof formSchema>) {
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(data));
-        if (image) {
-            formData.append('image', image);
+    // Set the initial status from the form value
+    useEffect(() => {
+        if (bookValue?.status) {
+            setStatus(bookValue.status)
         }
-        fetch('/api/books', {
-            method: 'POST',
+    }, [bookValue])
+
+    function onSubmit(data: z.infer<typeof formSchema>) {
+        const formData = new FormData()
+        formData.append(
+            "data",
+            JSON.stringify({
+                ...data,
+                // Remove the image from the JSON data since we'll append it separately
+                image: undefined,
+            }),
+        )
+        if (image) {
+            formData.append("image", image)
+        }
+        fetch("/api/books", {
+            method: "POST",
             body: formData,
         })
             .then((res) => {
@@ -69,17 +87,48 @@ function FormBooks() {
                 }
             })
             .catch((error) => {
-                console.error('Error:', error);
-            }
-            )
-        form.reset();
-
+                console.error("Error:", error)
+            })
+        form.reset()
     }
 
+    function onSubmintUpdate(data: z.infer<typeof formSchema>, id: string) {
+        const formData = new FormData()
+        formData.append(
+            "data",
+            JSON.stringify({
+                ...data,
+                // Remove the image from the JSON data since we'll append it separately
+                image: undefined,
+            }),
+        )
+        if (image) {
+            formData.append("image", image)
+        }
+        fetch("/api/books/" + id, {
+            method: "PUT",
+            body: formData,
+        })
+            .then((res) => {
+                if (res.ok) {
+                    window.location.reload()
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error)
+            })
+        form.reset()
+    }
 
     return (
         <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" encType="multipart/form-data">
+            <form
+                onSubmit={
+                    bookValue ? form.handleSubmit((data) => onSubmintUpdate(data, bookValue._id)) : form.handleSubmit(onSubmit)
+                }
+                encType="multipart/form-data"
+                className="space-y-4"
+            >
                 <FormField
                     control={form.control}
                     name="title"
@@ -113,7 +162,12 @@ function FormBooks() {
                         <FormItem>
                             <FormLabel>Pages</FormLabel>
                             <FormControl>
-                                <Input placeholder="Number of pages" type="number" {...field} onChange={event => field.onChange(+event.target.value)} />
+                                <Input
+                                    placeholder="Number of pages"
+                                    type="number"
+                                    {...field}
+                                    onChange={(event) => field.onChange(+event.target.value)}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -164,10 +218,13 @@ function FormBooks() {
                         <FormItem>
                             <FormLabel>Status</FormLabel>
                             <FormControl>
-                                <Select onValueChange={value => {
-                                    field.onChange(value);
-                                    setStatus(value);
-                                }} value={field.value}>
+                                <Select
+                                    onValueChange={(value) => {
+                                        field.onChange(value)
+                                        setStatus(value)
+                                    }}
+                                    value={field.value}
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select the reading status" />
                                     </SelectTrigger>
@@ -186,15 +243,31 @@ function FormBooks() {
                     )}
                 />
 
-                <FormItem>
-                    <FormLabel>Image</FormLabel>
-                    <FormControl>
-                        <Input id="picture" type="file" onChange={handleImageChange} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
+                <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Image</FormLabel>
+                            <FormControl>
+                                <Input
+                                    id="picture"
+                                    type="file"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0]
+                                        if (file) {
+                                            setImage(file)
+                                            field.onChange(file)
+                                        }
+                                    }}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                {(status == 'reading' || status == 'read') && (
+                {(status == "reading" || status == "read") && (
                     <FormField
                         control={form.control}
                         name="initDate"
@@ -202,14 +275,19 @@ function FormBooks() {
                             <FormItem>
                                 <FormLabel>Start read date</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Init date" type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} />
+                                    <Input
+                                        placeholder="Init date"
+                                        type="date"
+                                        {...field}
+                                        value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                 )}
-                {status == 'read' && (
+                {status == "read" && (
                     <>
                         <FormField
                             control={form.control}
@@ -218,7 +296,12 @@ function FormBooks() {
                                 <FormItem>
                                     <FormLabel>End read date</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="End date" type="date" {...field} value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''} />
+                                        <Input
+                                            placeholder="End date"
+                                            type="date"
+                                            {...field}
+                                            value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -233,6 +316,7 @@ function FormBooks() {
                                     <FormControl>
                                         <ReactStars
                                             count={5}
+                                            value={field.value}
                                             onChange={(newRating: number) => field.onChange(newRating)}
                                         />
                                     </FormControl>
@@ -254,12 +338,13 @@ function FormBooks() {
                             )}
                         />
                     </>
-
                 )}
-                <Button type="submit">Send</Button>
+                <Button type="submit" className="mt-4">
+                    Send
+                </Button>
             </form>
         </FormProvider>
-    );
+    )
 }
 
 export { FormBooks }
