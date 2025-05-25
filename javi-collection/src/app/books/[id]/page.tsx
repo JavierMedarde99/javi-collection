@@ -1,7 +1,7 @@
 'use client';
 
 import { DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
-import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import Image from 'next/image'
 import { useEffect, useState, use, useMemo } from 'react';
 import { FormBooks } from '../formBooks';
@@ -38,7 +38,11 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                 ) : (
                     <div>
                         <h1>{book.title}</h1>
-                        <Image src={`/books/${book.image ? book.image : 'default.jpg'}`} alt={book.title} width={200} height={300} />
+                        <Image src={
+                            book.image?.startsWith("http")
+                                ? book.image
+                                : `/books/${book.image || "default.jpg"}`
+                        } alt={book.title} width={200} height={300} />
                         <p><strong> Author: </strong>{book.writer}</p>
                         <p><strong>pages: </strong>{book.pages}</p>
                         <p><strong>initDate: </strong>{book.initDate}</p>

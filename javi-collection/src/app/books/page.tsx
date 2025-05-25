@@ -19,8 +19,6 @@ import {
 } from "@/components/ui/card"
 import Image from 'next/image'
 import ReactStars from 'react-stars'
-import { Dialog, DialogDescription } from '@radix-ui/react-dialog';
-import { DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { FormExternalBooks } from './formFindExternalBooks';
 
 export default function BooksPage() {
@@ -69,20 +67,17 @@ export default function BooksPage() {
                             <CardContent className='text-bg-light'>
                                 <Popover>
                                     <PopoverTrigger>add manual</PopoverTrigger>
-                                    <PopoverContent className="max-h-200 overflow-y-auto w-64">
+                                    <PopoverContent className="max-h-180 overflow-y-auto w-64">
                                         <FormBooks />
                                     </PopoverContent>
                                 </Popover>
-                                <Dialog>
-                                    <DialogTrigger>add find</DialogTrigger>
-                                    <DialogContent>
-                                        <DialogHeader>
-                                        <DialogTitle>add book</DialogTitle>
-                                        <DialogDescription>You can get the data from a book automatically</DialogDescription>
-                                        </DialogHeader>
+
+                                <Popover>
+                                    <PopoverTrigger>add find</PopoverTrigger>
+                                    <PopoverContent className="max-h-170 overflow-y-auto w-150">
                                         <FormExternalBooks />
-                                    </DialogContent>
-                                </Dialog>
+                                    </PopoverContent>
+                                </Popover>
                             </CardContent>
                         </Card>
                         {books.map((book) => (
@@ -91,7 +86,11 @@ export default function BooksPage() {
                                     <CardHeader>
                                         <CardTitle className="text-center">{book.title}</CardTitle>
                                         <Image
-                                            src={`/books/${book.image ? book.image : 'default.jpg'}`}
+                                            src={
+                                                book.image?.startsWith("http")
+                                                    ? book.image
+                                                    : `/books/${book.image || "default.jpg"}`
+                                            }
                                             alt={book.title}
                                             width={200}
                                             height={300}
@@ -106,11 +105,11 @@ export default function BooksPage() {
                                             <li><strong>type:</strong> {book.type}</li>
                                             <li><strong>status:</strong> {book.status}</li>
                                             {book.status == 'read' && (
-                                                    <ReactStars
-                                                        count={5}
-                                                        value={book.rating}
-                                                        size={24}
-                                                        edit={false}/>
+                                                <ReactStars
+                                                    count={5}
+                                                    value={book.rating}
+                                                    size={24}
+                                                    edit={false} />
                                             )}
                                         </ul>
 

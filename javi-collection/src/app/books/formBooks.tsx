@@ -7,15 +7,6 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { useEffect, useState } from "react"
 import ReactStars from "react-stars"
 
@@ -193,19 +184,18 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                         <FormItem>
                             <FormLabel>Type</FormLabel>
                             <FormControl>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a type of book" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Type</SelectLabel>
-                                            <SelectItem value="novel">Novel</SelectItem>
-                                            <SelectItem value="comic">Comic</SelectItem>
-                                            <SelectItem value="manga">Manga</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                <select
+                                    className="border border-input bg-transparent rounded-md px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring outline-none"
+                                    {...field}
+                                    onChange={(event) => field.onChange(event.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        Select a type of book
+                                    </option>
+                                    <option value="novel">Novel</option>
+                                    <option value="comic">Comic</option>
+                                    <option value="manga">Manga</option>
+                                </select>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -218,25 +208,22 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                         <FormItem>
                             <FormLabel>Status</FormLabel>
                             <FormControl>
-                                <Select
-                                    onValueChange={(value) => {
-                                        field.onChange(value)
-                                        setStatus(value)
+                                <select
+                                    className="border border-input bg-transparent rounded-md px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring outline-none"
+                                    {...field}
+                                    onChange={(event) => {
+                                        field.onChange(event.target.value)
+                                        setStatus(event.target.value)
                                     }}
                                     value={field.value}
                                 >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select the reading status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>status</SelectLabel>
-                                            <SelectItem value="reading">Reading</SelectItem>
-                                            <SelectItem value="read">Read</SelectItem>
-                                            <SelectItem value="toRead">To read</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
+                                    <option value="" disabled>
+                                        Select the reading status
+                                    </option>
+                                    <option value="reading">Reading</option>
+                                    <option value="read">Read</option>
+                                    <option value="toRead">To read</option>
+                                </select>
                             </FormControl>
                             <FormMessage />
                         </FormItem>

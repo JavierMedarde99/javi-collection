@@ -1,4 +1,6 @@
 import { NextRequest } from 'next/server';
+import dbConnect from '@/lib/mongodb';
+import Books from '@/lib/models/Books';
 
 const GOOGLE_BOOK_KEY = process.env.GOOGLE_BOOK_KEY as string;
 
@@ -22,9 +24,9 @@ async function GET(request: NextRequest) {
         const data = await res.json();
 
         const listBooksSelect = data.items?.map((info) => ({
-            text: info.volumeInfo.title,
-            image: info.volumeInfo.imageLinks?.smallThumbnail ?? '',
-            value: info
+            label: info.volumeInfo.authors ? info.volumeInfo.title+ ", " +info.volumeInfo.authors : info.volumeInfo.title,
+            //image: info.volumeInfo.imageLinks?.smallThumbnail ?? '',
+            value: JSON.stringify(info),
         })) ?? [];
 
         return new Response(JSON.stringify(listBooksSelect), {
@@ -42,4 +44,43 @@ async function GET(request: NextRequest) {
     }
 }
 
-export { GET };
+async function POST(req: NextRequest) {
+
+    try {
+        await dbConnect();
+        const data = await req.text(); // get raw text body
+        const parsedData = data ? JSON.parse(data) : null;
+        const bookData = parsedData.book ? JSON.parse(parsedData.book as string) : null;
+
+        console.log('Parsed Data:', parsedData);
+        console.log('Book Data:', bookData);
+
+        await Books.create({
+            title: bookData.volumeInfo.title ?? '',
+            writer: bookData.volumeInfo.authors ?? 'unknown',
+            pages: bookData.volumeInfo.pageCount ?? 0,
+            initDate: parsedData.initDate ? parsedData.initDate : null,
+            endDate: parsedData.endDate ? parsedData.endDate : null,
+            rating: parsedData.rating ? parsedData.rating : null,
+            review: parsedData.review ? parsedData.review : null,
+            status: parsedData.status,
+            type: parsedData.type,
+            image: bookData.volumeInfo.imageLinks?.smallThumbnail ?? null,
+            description: bookData.volumeInfo.description ?? '',
+        });
+
+        return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+        });
+    } catch (error) {
+        console.error('Error fetching books:', error);
+        return new Response(JSON.stringify("{error: internal error}"), {
+            status: 500,
+            headers: { "Content-Type": "application/json" }
+        });
+    }
+
+}
+
+export { GET,POST };
