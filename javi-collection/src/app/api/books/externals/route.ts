@@ -52,12 +52,9 @@ async function POST(req: NextRequest) {
         const parsedData = data ? JSON.parse(data) : null;
         const bookData = parsedData.book ? JSON.parse(parsedData.book as string) : null;
 
-        console.log('Parsed Data:', parsedData);
-        console.log('Book Data:', bookData);
-
         await Books.create({
             title: bookData.volumeInfo.title ?? '',
-            writer: bookData.volumeInfo.authors ?? 'unknown',
+            writer: bookData.volumeInfo.authors[0] ?? 'unknown',
             pages: bookData.volumeInfo.pageCount ?? 0,
             initDate: parsedData.initDate ? parsedData.initDate : null,
             endDate: parsedData.endDate ? parsedData.endDate : null,
