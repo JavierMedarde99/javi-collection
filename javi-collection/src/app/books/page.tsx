@@ -20,6 +20,7 @@ import {
 import Image from 'next/image'
 import ReactStars from 'react-stars'
 import { FormExternalBooks } from './formFindExternalBooks';
+import { Button } from '@/components/ui/button';
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -48,11 +49,11 @@ export default function BooksPage() {
 
     return (
         <div>
-            <h1>List of Books</h1>
-            <div className="flex flex-row justify-around w-full">
-                <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
-                <FindButtons setbookname={setNameBook} />
-            </div>
+            <FindButtons setbookname={setNameBook} />
+            <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
+
+            <h1 className='font-black '>My book collection</h1>
+
             <div className='listBooks'>
                 {books.length === 0 ? (
                     <div className='loading'>
@@ -60,64 +61,55 @@ export default function BooksPage() {
                     </div>
                 ) : (
                     <>
-                        < Card className="mt-4 w-25">
-                            <CardHeader>
-                                <CardTitle>New</CardTitle>
-                            </CardHeader>
-                            <CardContent className='text-bg-light'>
-                                <Popover>
-                                    <PopoverTrigger>add manual</PopoverTrigger>
-                                    <PopoverContent className="max-h-180 overflow-y-auto w-64">
-                                        <FormBooks />
-                                    </PopoverContent>
-                                </Popover>
 
-                                <Popover>
-                                    <PopoverTrigger>add find</PopoverTrigger>
-                                    <PopoverContent className="max-h-170 overflow-y-auto w-150">
-                                        <FormExternalBooks />
-                                    </PopoverContent>
-                                </Popover>
-                            </CardContent>
-                        </Card>
+                        <div className="w-full flex flex-row justify-start m-6 ">
+                            <Popover >
+                                <PopoverTrigger asChild className="ml-30">
+                                    <Button variant='destructive'>Add manual</Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="max-h-180 overflow-y-auto w-64">
+                                    <FormBooks />
+                                </PopoverContent>
+                            </Popover>
+
+                            <Popover>
+                                <PopoverTrigger asChild className="ml-20">
+                                    <Button variant='destructive'>import book</Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="max-h-170 overflow-y-auto w-150">
+                                    <FormExternalBooks />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
                         {books.map((book) => (
                             ((typeBook == book.type || typeBook == '') && (nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase()))) && (
-                                <Card key={book._id} className="mt-4">
-                                    <CardHeader>
-                                        <CardTitle className="text-center">{book.title}</CardTitle>
-                                        <Image
-                                            src={
-                                                book.image?.startsWith("http")
-                                                    ? book.image
-                                                    : `/books/${book.image || "default.jpg"}`
-                                            }
-                                            alt={book.title}
-                                            width={200}
-                                            height={300}
-                                            style={{
-                                                margin: "auto",
-                                            }}
-                                        />
-                                    </CardHeader>
-                                    <CardContent className='text-bg-light'>
-                                        <ul>
-                                            <li><strong>Author:</strong> {book.writer}</li>
-                                            <li><strong>type:</strong> {book.type}</li>
-                                            <li><strong>status:</strong> {book.status}</li>
-                                            {book.status == 'read' && (
-                                                <ReactStars
-                                                    count={5}
-                                                    value={book.rating}
-                                                    size={24}
-                                                    edit={false} />
-                                            )}
-                                        </ul>
-
-                                        <p>
-                                            {truncateText(book.description)}</p>
-                                        <p className="text-center"> <a href={`/books/${book._id}`}>Ver más</a> </p>
-                                    </CardContent>
-                                </Card>
+                                <div key={book._id} className="w-full ml-30 flex flex-row">
+                                    <Image
+                                        src={
+                                            book.image?.startsWith("http")
+                                                ? book.image
+                                                : `/books/${book.image || "default.jpg"}`
+                                        }
+                                        alt={book.title}
+                                        width={150}
+                                        height={200}
+                                        className="rounded-lg mb-4 object-contain"
+                                    />
+                                    <div className='ml-4 flex flex-col '>
+                                        <h2>{book.title}</h2>
+                                        <h3 className='text-[var(--color-redtext)]'>By {book.writer}</h3>
+                                        <p className='text-sm text-gray-500 mt-3'>{truncateText(book.description, 300)}... <a href={`/books/${book._id}`}>Ver más</a></p>
+                                        {book.status == 'read' && (
+                                            <ReactStars
+                                                count={5}
+                                                value={book.rating}
+                                                size={24}
+                                                edit={false} />
+                                        )}
+                                    </div>
+                                    
+                                </div>
                             )
                         ))}
                     </>

@@ -1,5 +1,4 @@
 import { Input } from "@/components/ui/input";
-
 interface NameBooksProps {
     setbookname: (bookname: string) => void;
   }
@@ -13,7 +12,7 @@ const FindButtons: React.FC<NameBooksProps> = ({ setbookname }) => {
 
     return(
         <>
-        <Input placeholder="Find a book" className="w-50" onChange={findBook}></Input>
+        <Input placeholder="Search for book" className="w-250 m-auto mt-3 bg-[var(--color-inputs)] placeholder-[var(--color-redtext)]" onChange={findBook} ></Input>
         </>
     )
 }

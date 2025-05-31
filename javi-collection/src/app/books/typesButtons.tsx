@@ -13,12 +13,12 @@ const TypesButtons: React.FC<TypesButtonsProps> = ({ booktype, setbooktype }) =>
     };
 
   return (
-    <>
-      <Badge variant={booktype=='novel'? 'outline': 'secondary'} onClick={() => handleTypeClick('novel')}>Novel</Badge>
-      <Badge variant={booktype=='manga'? 'outline': 'secondary'} onClick={() => handleTypeClick('manga')}>Manga</Badge>
-      <Badge variant={booktype=='comic'? 'outline': 'secondary'} onClick={() => handleTypeClick('comic')}>Comic</Badge>
-      <Badge variant={booktype==''? 'outline': 'secondary'} onClick={() => handleTypeClick('')}>All</Badge>
-    </>
+    <div className="flex flex-row justify-around w-full mt-3 mb-3 ">
+      <Badge variant={booktype=='novel'? 'destructive': 'secondary'} onClick={() => handleTypeClick('novel')} className="p-2">Novel</Badge>
+      <Badge variant={booktype=='manga'? 'destructive': 'secondary'} onClick={() => handleTypeClick('manga')} className="p-2">Manga</Badge>
+      <Badge variant={booktype=='comic'? 'destructive': 'secondary'} onClick={() => handleTypeClick('comic')} className="p-2">Comic</Badge>
+      <Badge variant={booktype==''? 'destructive': 'secondary'} onClick={() => handleTypeClick('')} className="p-2">All</Badge>
+    </div>
   );
 }
 
