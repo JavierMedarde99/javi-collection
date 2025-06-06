@@ -54,7 +54,7 @@ async function POST(req: NextRequest) {
 
         await Books.create({
             title: bookData.volumeInfo.title ?? '',
-            writer: bookData.volumeInfo.authors[0] ?? 'unknown',
+            writer: bookData.volumeInfo.authors ? bookData.volumeInfo.authors[0] :'unknown',
             pages: bookData.volumeInfo.pageCount ?? 0,
             initDate: parsedData.initDate ? parsedData.initDate : null,
             endDate: parsedData.endDate ? parsedData.endDate : null,

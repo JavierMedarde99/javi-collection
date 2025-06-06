@@ -11,12 +11,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Progress } from "@/components/ui/progress"
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
 import Image from 'next/image'
 import ReactStars from 'react-stars'
 import { FormExternalBooks } from './formFindExternalBooks';
@@ -96,7 +90,7 @@ export default function BooksPage() {
                                         height={200}
                                         className="rounded-lg mb-4 object-contain"
                                     />
-                                    <div className='ml-4 flex flex-col '>
+                                    <div className='ml-4 mr-50 flex flex-col '>
                                         <h2>{book.title}</h2>
                                         <h3 className='text-[var(--color-redtext)]'>By {book.writer}</h3>
                                         <p className='text-sm text-gray-500 mt-3'>{truncateText(book.description, 300)}... <a href={`/books/${book._id}`}>Ver más</a></p>

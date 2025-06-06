@@ -40,16 +40,16 @@ async function POST(req: Request) {
         const image = formData.get("image") as File | null; // type: File
 
         const books = await Books.create({
-            title: parsedData.title,
-            writer: parsedData.writer,
-            pages: parsedData.pages,
+            title: parsedData.title ?? '',
+            writer: parsedData.writer ?? '',
+            pages: parsedData.pages ?? '',
             initDate: parsedData.initDate ? parsedData.initDate : null,
             endDate: parsedData.endDate ? parsedData.endDate : null,
             rating: parsedData.rating ? parsedData.rating : null,
             review: parsedData.review ? parsedData.review : null,
             status: parsedData.status,
             type: parsedData.type,
-            description: parsedData.description,
+            description: parsedData.description ?? '',
         });
 
         if (image) {
