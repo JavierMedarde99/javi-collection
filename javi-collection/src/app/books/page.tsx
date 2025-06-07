@@ -38,7 +38,7 @@ export default function BooksPage() {
     function truncateText(text: string, maxLength = 50) {
         return text.length > maxLength
             ? text.slice(0, maxLength - 3) + '...'
-            : text;
+            : text + '..';
     }
 
     return (
@@ -93,7 +93,7 @@ export default function BooksPage() {
                                     <div className='ml-4 mr-50 flex flex-col '>
                                         <h2>{book.title}</h2>
                                         <h3 className='text-[var(--color-redtext)]'>By {book.writer}</h3>
-                                        <p className='text-sm text-gray-500 mt-3'>{truncateText(book.description, 300)}... <a href={`/books/${book._id}`}>Ver más</a></p>
+                                        <p className='text-sm text-gray-500 mt-3'>{truncateText(book.description, 300)} </p>
                                         {book.status == 'read' && (
                                             <ReactStars
                                                 count={5}
@@ -101,6 +101,7 @@ export default function BooksPage() {
                                                 size={24}
                                                 edit={false} />
                                         )}
+                                        <a href={`/books/${book._id}`} className="inline-block bg-red-400 hover:bg-red-500 text-white font-semibold py-2 px-4 rounded w-25 mt-3">Ver más</a>
                                     </div>
                                     
                                 </div>
