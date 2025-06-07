@@ -5,6 +5,8 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import Image from 'next/image'
 import { useEffect, useState, use, useMemo } from 'react';
 import { FormBooks } from '../formBooks';
+import ReactStars from 'react-stars';
+import { Button } from '@/components/ui/button';
 
 export default function BookPage({ params }: { params: Promise<{ id: string }> }) {
 
@@ -36,33 +38,56 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                 book.length === 0 ? (
                     <p>Cargando libro...</p>
                 ) : (
-                    <div>
-                        <h1>{book.title}</h1>
-                        <Image src={
-                            book.image?.startsWith("http")
-                                ? book.image
-                                : `/books/${book.image || "default.jpg"}`
-                        } alt={book.title} width={200} height={300} />
-                        <p><strong> Author: </strong>{book.writer}</p>
-                        <p><strong>pages: </strong>{book.pages}</p>
-                        <p><strong>initDate: </strong>{book.initDate}</p>
-                        <p>{book.description}</p>
-                        {book.status !== 'reader' && (
+                    <div className='flex flex-col items-center justify-center p-4 m-20'>
+                        <div className='flex flex-row '>
+                            <div className='mr-4'>
+                                <h1 className='font-black'>{book.title}</h1>
+                                <h3 className='text-[var(--color-redtext)]'>By {book.writer}</h3>
+                                <p className='mt-4'>Summary</p>
+                                <p className='text-[var(--color-redtext)]'>{book.description}</p>
+                            </div>
+                            <Image src={
+                                book.image?.startsWith("http")
+                                    ? book.image
+                                    : `/books/${book.image || "default.jpg"}`
+                            } alt={book.title} width={500} height={300} />
+                        </div>
+                        <div className='flex flex-row justify-evenly w-full mt-10 border-t-2 border-gray-200 border-solid'>
+                            <p><span className='text-[var(--color-redtext)]'>pages</span> <br /> {book.pages}</p>
+                            <p><span className='text-[var(--color-redtext)]'>type</span> <br /> {book.type}</p>
+                            <p><span className='text-[var(--color-redtext)]'>status</span> <br /> {book.status}</p>
+                        </div>
+
+                        {book.status == 'reading' && (
+                            <div className='flex flex-row justify-evenly w-full mt-10 border-t-2 border-gray-200 border-solid'>
+                                <p><span className='text-[var(--color-redtext)]'>start to read</span> <br /> {book.initDate.split('T')[0]}</p>
+                            </div>
+                        )}
+
+                        {book.status == 'read' && (
                             <>
-                                <p><strong>status:</strong> {book.status}</p>
-                                <p><strong>endDate:</strong> {book.endDate}</p>
-                                <p><strong>rating:</strong> {book.rating}</p>
-                                <p><strong>review:</strong> {book.review}</p>
+                                <div className='flex flex-row justify-evenly w-full mt-10 border-t-2 border-gray-200 border-solid'>
+                                    <p><span className='text-[var(--color-redtext)]'>start to read</span> <br /> {book.initDate.split('T')[0]}</p>
+                                    <p><span className='text-[var(--color-redtext)]'>end to read</span> <br /> {book.endDate.split('T')[0]}</p>
+                                    <div><span className='text-[var(--color-redtext)]'>rating</span>
+                                        <ReactStars
+                                            count={5}
+                                            value={book.rating}
+                                            size={24}
+                                            edit={false} /></div>
+                                </div>
+                                <div className='flex flex-col w-full mt-10 border-t-2 border-gray-200 border-solid'>
+                                    <p className='mt-4'>Review</p>
+                                    <p className='text-[var(--color-redtext)]'>{book.review}</p>
+                                </div>
+                                
                             </>
                         )}
 
                         <Dialog open={open} onOpenChange={setOpen}>
-                            <DialogTrigger>Update</DialogTrigger>
+                            <DialogTrigger asChild ><Button variant='destructive'>Update Book</Button></DialogTrigger>
                             <DialogContent >
                                 <DialogTitle>Update Book</DialogTitle>
-                                <DialogDescription>
-                                    Update the book information.
-                                </DialogDescription>
                                 <FormBooks bookValue={bookMemo} />
                             </DialogContent>
                         </Dialog>

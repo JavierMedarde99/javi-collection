@@ -46,7 +46,7 @@ export default function BooksPage() {
             <FindButtons setbookname={setNameBook} />
             <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
 
-            <h1 className='font-black '>My book collection</h1>
+            <h1 className='font-black'>My book collection</h1>
 
             <div className='listBooks'>
                 {books.length === 0 ? (
