@@ -30,11 +30,8 @@ async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }
     try {
         await dbConnect();
 
-        
-        console.log('params', params);
-
         const { id } = await params;
-        
+
         const formData = await req.formData();
         const data = formData.get("data"); //json data
         const parsedData = data ? JSON.parse(data as string) : null;
@@ -48,21 +45,34 @@ async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }
             const routeDestination = join(destinationFolder, imageName);
             const buffer = Buffer.from(await image.arrayBuffer());
             await fs.writeFile(routeDestination, buffer);
+            await Books.findByIdAndUpdate(id, {
+                title: parsedData.title,
+                writer: parsedData.writer,
+                pages: parsedData.pages,
+                initDate: parsedData.initDate ? parsedData.initDate : null,
+                endDate: parsedData.endDate ? parsedData.endDate : null,
+                rating: parsedData.rating ? parsedData.rating : null,
+                review: parsedData.review ? parsedData.review : null,
+                status: parsedData.status,
+                type: parsedData.type,
+                description: parsedData.description,
+                image: imageName ? imageName : null
+            });
+        } else {
+            await Books.findByIdAndUpdate(id, {
+                title: parsedData.title,
+                writer: parsedData.writer,
+                pages: parsedData.pages,
+                initDate: parsedData.initDate ? parsedData.initDate : null,
+                endDate: parsedData.endDate ? parsedData.endDate : null,
+                rating: parsedData.rating ? parsedData.rating : null,
+                review: parsedData.review ? parsedData.review : null,
+                status: parsedData.status,
+                type: parsedData.type,
+                description: parsedData.description
+            });
         }
 
-        await Books.findByIdAndUpdate(id, {
-            title: parsedData.title,
-            writer: parsedData.writer,
-            pages: parsedData.pages,
-            initDate: parsedData.initDate ? parsedData.initDate : null,
-            endDate: parsedData.endDate ? parsedData.endDate : null,
-            rating: parsedData.rating ? parsedData.rating : null,
-            review: parsedData.review ? parsedData.review : null,
-            status: parsedData.status,
-            type: parsedData.type,
-            description: parsedData.description,
-            image: imageName ? imageName : null
-        });
 
         return new Response(JSON.stringify("{'success': 'updated correctly'}"), {
             status: 200,
@@ -80,8 +90,6 @@ async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }
 async function POST(req: NextApiRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await dbConnect();
-
-        console.log('params', params);
 
         const { id } = await params;
 
