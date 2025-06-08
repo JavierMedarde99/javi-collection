@@ -105,7 +105,7 @@ export default function BookPage({ params }: { params: Promise<{ id: string }> }
                         <div className='flex flex-row justify-evenly w-full mt-10'>
                         <Dialog open={open} onOpenChange={setOpen}>
                             <DialogTrigger asChild ><Button variant='destructive'>Update book</Button></DialogTrigger>
-                            <DialogContent >
+                            <DialogContent  className="max-h-[80vh] overflow-y-auto">
                                 <DialogTitle>Update Book</DialogTitle>
                                 <FormBooks bookValue={bookMemo} />
                             </DialogContent>
