@@ -2,8 +2,8 @@
 
 import './books.css';
 import { FormBooks } from "./formBooks";
-import { FindButtons } from "./InputFindBook";
-import { TypesButtons } from "./typesButtons";
+import {Find} from "../../components/InputFind";
+import { TypesButtons } from "../../components/typesButtons";
 import { useEffect, useState } from 'react';
 import {
     Popover,
@@ -20,6 +20,7 @@ export default function BooksPage() {
     const [books, setBooks] = useState([]);
     const [typeBook, setTypeBook] = useState('');
     const [nameBook, setNameBook] = useState('');
+    const listTypeBooks = ['novel', 'manga', 'comic', ''];
 
     useEffect(() => {
         async function fetchBooks() {
@@ -43,8 +44,8 @@ export default function BooksPage() {
 
     return (
         <div>
-            <FindButtons setbookname={setNameBook} />
-            <TypesButtons booktype={typeBook} setbooktype={setTypeBook} />
+            <Find setname={setNameBook} />
+            <TypesButtons type={typeBook} setType={setTypeBook} listButtons={listTypeBooks}/>
 
             <h1 className='font-black'>My book collection</h1>
 
