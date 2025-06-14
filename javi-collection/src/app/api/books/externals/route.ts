@@ -25,7 +25,6 @@ async function GET(request: NextRequest) {
 
         const listBooksSelect = data.items?.map((info) => ({
             label: info.volumeInfo.authors ? info.volumeInfo.title+ ", " +info.volumeInfo.authors : info.volumeInfo.title,
-            //image: info.volumeInfo.imageLinks?.smallThumbnail ?? '',
             value: JSON.stringify(info),
         })) ?? [];
 

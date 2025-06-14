@@ -1,9 +1,8 @@
 'use client';
 
-import './books.css';
 import { FormBooks } from "./formBooks";
-import {Find} from "../../components/InputFind";
-import { TypesButtons } from "../../components/typesButtons";
+import {Find} from "../../components/shared/InputFind";
+import { TypesButtons } from "../../components/shared/typesButtons";
 import { useEffect, useState } from 'react';
 import {
     Popover,
@@ -49,7 +48,7 @@ export default function BooksPage() {
 
             <h1 className='font-black'>My book collection</h1>
 
-            <div className='listBooks'>
+            <div className='list'>
                 {books.length === 0 ? (
                     <div className='loading'>
                         <Progress value={33} />
