@@ -49,12 +49,13 @@ async function POST(req: Request) {
             review: parsedData.review ? parsedData.review : null,
             status: parsedData.status,
             platform: parsedData.platform,
+            description: parsedData.description ?? '',
         });
 
         if (image) {
         const imageName = videogame._id.toString()+'.'+ image?.name.split('.').pop() as string;
-        await videogame.findByIdAndUpdate(videogame._id, { image: imageName });
-        const destinationFolder = join(process.cwd(), 'public', 'books');
+        await Videogames.findByIdAndUpdate(videogame._id, { image: imageName });
+        const destinationFolder = join(process.cwd(), 'public', 'videogames');
         const routeDestination = join(destinationFolder, imageName);
         const buffer = Buffer.from(await image.arrayBuffer());
         await fs.writeFile(routeDestination, buffer);

@@ -1,59 +1,56 @@
-"use client"
-
-import { FormProvider, useForm } from "react-hook-form"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { useEffect, useState } from "react"
-import ReactStars from "react-stars"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { z } from "zod";
+import ReactStars from "react-stars";
+import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
-    title: z.string().min(1, { message: "The title is required" }),
-    writer: z.string().min(1, { message: "The author is required" }),
-    pages: z.number().min(1, { message: "The number of pages is required" }),
-    description: z.string().min(1, { message: "Description is required" }),
-    type: z.enum(["novel", "comic", "manga"], { message: "The type is required" }),
-    status: z.enum(["reading", "read", "toRead"], { message: "The state is required" }),
+    title: z.string().min(1, "Title is required"),
+    duration: z.number().min(1, "Duration must be at least 1 hour"),
+    released: z.coerce.date().refine(date => date <= new Date(), "Release date cannot be in the future"),
+    description: z.string().min(1, "Description is required"),
+    platform: z.enum(['PC', 'PS2', 'PS3', 'Wii U', 'Switch', 'PSP', 'Nitendo DS', 'Nintendo 3DS'], {
+        required_error: "Platform is required",
+        invalid_type_error: "Platform must be a valid option",
+    }),
+    status: z.enum(['To Play', 'Playing', 'Completed', 'Finished', 'Dropped'], {
+        required_error: "Status is required",
+        invalid_type_error: "Status must be a valid option",
+    }),
     initDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),
-    rating: z.number().optional(),
+    rating: z.number().min(0).max(10).optional(),
     review: z.string().optional(),
-    image: z.any().optional(),
-})
+    image: z.any().optional(), 
+});
 
-function FormBooks({ bookValue }: { bookValue?: any }) {
-    const [status, setStatus] = useState("toRead")
+function FormVideogames() {
+
     const [image, setImage] = useState<File | null>(null)
+    const [status, setStatus] = useState<string>("To Play");
 
-    // Initialize form with default values
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: bookValue?.title || "",
-            writer: bookValue?.writer || "",
-            pages: bookValue?.pages || 0,
-            description: bookValue?.description || "",
-            type: bookValue?.type || "novel",
-            status: bookValue?.status || "toRead",
-            initDate: bookValue?.initDate ? new Date(bookValue.initDate) : undefined,
-            endDate: bookValue?.endDate ? new Date(bookValue.endDate) : undefined,
-            rating: bookValue?.rating || undefined,
-            review: bookValue?.review || "",
-            image: undefined,
+            title: "",
+            duration: 1,
+            released: new Date(),
+            description: "",
+            platform: "PC",
+            status: "To Play",
+            initDate: undefined,
+            endDate: undefined,
+            rating: undefined,
+            review: "",
+            image: null, 
         },
-    })
+    });
 
-    // Set the initial status from the form value
-    useEffect(() => {
-        if (bookValue?.status) {
-            setStatus(bookValue.status)
-        }
-    }, [bookValue])
-
-    function onSubmit(data: z.infer<typeof formSchema>) {
+    const onSubmit = async (data: z.infer<typeof formSchema>) => {
         const formData = new FormData()
         formData.append(
             "data",
@@ -66,58 +63,27 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
         if (image) {
             formData.append("image", image)
         }
-        fetch("/api/books", {
+        fetch("/api/videogames", {
             method: "POST",
             body: formData,
         })
-            .then((res) => {
-                if (res.ok) {
+            .then((response) => {
+                if (response.ok) {
                     window.location.reload()
                 }
-            })
-            .catch((error) => {
-                console.error("Error:", error)
-            })
-        form.reset()
-    }
 
-    function onSubmintUpdate(data: z.infer<typeof formSchema>, id: string) {
-        const formData = new FormData()
-        formData.append(
-            "data",
-            JSON.stringify({
-                ...data,
-                // Remove the image from the JSON data since we'll append it separately
-                image: undefined,
-            }),
-        )
-        if (image) {
-            formData.append("image", image)
-        }
-        fetch("/api/books/" + id, {
-            method: "PUT",
-            body: formData,
-        })
-            .then((res) => {
-                if (res.ok) {
-                    window.location.reload()
-                }
-            })
+            }
+            )
             .catch((error) => {
-                console.error("Error:", error)
-            })
+                console.error("Error:", error);
+            }
+            );
         form.reset()
-    }
+    };
 
     return (
-        <FormProvider {...form}>
-            <form
-                onSubmit={
-                    bookValue ? form.handleSubmit((data) => onSubmintUpdate(data, bookValue._id)) : form.handleSubmit(onSubmit)
-                }
-                encType="multipart/form-data"
-                className="space-y-4"
-            >
+        <FormProvider {...form} >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" encType="multipart/form-data">
                 <FormField
                     control={form.control}
                     name="title"
@@ -125,7 +91,7 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                         <FormItem>
                             <FormLabel>Title</FormLabel>
                             <FormControl>
-                                <Input placeholder="Title of the book" {...field} />
+                                <Input {...field} placeholder="Title" />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -133,29 +99,35 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                 />
                 <FormField
                     control={form.control}
-                    name="writer"
+                    name="duration"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Author</FormLabel>
-                            <FormControl>
-                                <Input placeholder="Author of the book" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="pages"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Pages</FormLabel>
+                            <FormLabel>Duration (hours)</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="Number of pages"
-                                    type="number"
                                     {...field}
+                                    type="number"
+                                    placeholder="Duration in hours"
+                                    min={1}
                                     onChange={(event) => field.onChange(+event.target.value)}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="released"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Release Date</FormLabel>
+                            <FormControl>
+                                <Input
+                                    {...field}
+                                    type="date"
+                                    placeholder="Release Date"
+                                    value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -169,7 +141,7 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Description of the book" {...field} />
+                                <Textarea placeholder="Description of the videogame" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -177,10 +149,10 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                 />
                 <FormField
                     control={form.control}
-                    name="type"
+                    name="platform"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Type</FormLabel>
+                            <FormLabel>platform</FormLabel>
                             <FormControl>
                                 <select
                                     className="border border-input bg-transparent rounded-md px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring outline-none"
@@ -188,11 +160,16 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                                     onChange={(event) => field.onChange(event.target.value)}
                                 >
                                     <option value="" disabled>
-                                        Select a type of book
+                                        Select a platform
                                     </option>
-                                    <option value="novel">Novel</option>
-                                    <option value="comic">Comic</option>
-                                    <option value="manga">Manga</option>
+                                    <option value="PC">PC</option>
+                                    <option value="PS2">PS2</option>
+                                    <option value="PS3">PS3</option>
+                                    <option value="Wii U">Wii U</option>
+                                    <option value="Switch">Switch</option>
+                                    <option value="PSP">PSP</option>
+                                    <option value="Nitendo DS">Nitendo DS</option>
+                                    <option value="Nintendo 3DS">Nintendo 3DS</option>
                                 </select>
                             </FormControl>
                             <FormMessage />
@@ -209,25 +186,22 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                                 <select
                                     className="border border-input bg-transparent rounded-md px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-ring outline-none"
                                     {...field}
-                                    onChange={(event) => {
-                                        field.onChange(event.target.value)
-                                        setStatus(event.target.value)
-                                    }}
-                                    value={field.value}
+                                    onChange={(event) => { field.onChange(event.target.value); setStatus(event.target.value) }}
                                 >
                                     <option value="" disabled>
-                                        Select the reading status
+                                        Select a status
                                     </option>
-                                    <option value="reading">Reading</option>
-                                    <option value="read">Read</option>
-                                    <option value="toRead">To read</option>
+                                    <option value="To Play">To Play</option>
+                                    <option value="Playing">Playing</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Finished">Finished</option>
+                                    <option value="Dropped">Dropped</option>
                                 </select>
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-
                 <FormField
                     control={form.control}
                     name="image"
@@ -251,18 +225,17 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                         </FormItem>
                     )}
                 />
-
-                {(status == "reading" || status == "read") && (
+                {(status === 'Playing' || status === "Completed" || status == "Finished") && (
                     <FormField
                         control={form.control}
                         name="initDate"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Start read date</FormLabel>
+                                <FormLabel>Start Date</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="Init date"
                                         type="date"
+                                        placeholder="Start Date"
                                         {...field}
                                         value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                                     />
@@ -270,21 +243,20 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
-                )}
-                {status == "read" && (
+                    />)}
+                {(status === 'Completed' || status === "Finished") && (
                     <>
                         <FormField
                             control={form.control}
                             name="endDate"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>End read date</FormLabel>
+                                    <FormLabel>End Date</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="End date"
-                                            type="date"
                                             {...field}
+                                            type="date"
+                                            placeholder="End Date"
                                             value={field.value ? new Date(field.value).toISOString().split("T")[0] : ""}
                                         />
                                     </FormControl>
@@ -316,20 +288,20 @@ function FormBooks({ bookValue }: { bookValue?: any }) {
                                 <FormItem>
                                     <FormLabel>Review</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="Review of the book" {...field} />
+                                        <Textarea placeholder="Write your review here" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </>
-                )}
+                    </>)}
                 <Button type="submit" className="mt-4">
                     Send
                 </Button>
             </form>
         </FormProvider>
     )
+
 }
 
-export { FormBooks }
+export { FormVideogames }

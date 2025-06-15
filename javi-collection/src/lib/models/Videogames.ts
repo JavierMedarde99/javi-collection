@@ -4,6 +4,7 @@ export interface IVideogames extends Document {
     title: string;
     duration: number;
     released: Date;
+    description: string;
     platform: string;
     status: string;
     image?: string;
@@ -24,6 +25,7 @@ const VideogamesSchema: Schema = new Schema({
     status: { type: String, required: true, },
     platform: { type: String, required: true, },
     image: { type: String, required: false, },
+    description: { type: String, required: true, },
 });
 
 const Books = mongoose.models.Videogames || mongoose.model<IVideogames>('Videogames', VideogamesSchema);

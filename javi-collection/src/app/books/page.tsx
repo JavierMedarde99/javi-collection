@@ -14,6 +14,7 @@ import Image from 'next/image'
 import ReactStars from 'react-stars'
 import { FormExternalBooks } from './formFindExternalBooks';
 import { Button } from '@/components/ui/button';
+import { IBooks } from '@/lib/models/Books';
 
 export default function BooksPage() {
     const [books, setBooks] = useState([]);
@@ -76,9 +77,9 @@ export default function BooksPage() {
                             </Popover>
                         </div>
 
-                        {books.map((book) => (
+                        {books.map((book: IBooks) => (
                             ((typeBook == book.type || typeBook == '') && (nameBook == '' || book.title.toLowerCase().includes(nameBook.toLowerCase()))) && (
-                                <div key={book._id} className="w-full ml-30 flex flex-row">
+                                <div key={String(book._id)} className="w-full ml-30 flex flex-row">
                                     <Image
                                         src={
                                             book.image?.startsWith("http")
