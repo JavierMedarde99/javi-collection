@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IVideogames extends Document {
     title: string;
-    duration: number;
+    duration?: number;
     released: Date;
     description: string;
     platform: string;
@@ -16,7 +16,7 @@ export interface IVideogames extends Document {
 
 const VideogamesSchema: Schema = new Schema({
     title: { type: String, required: true,},
-    duration: { type: Number, required: true, },
+    duration: { type: Number, required: false, },
     released: { type: Date, required: true, },
     initDate: { type: Date, required: false, },
     endDate: { type: Date, required: false, },
